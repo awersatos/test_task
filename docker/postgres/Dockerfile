@@ -1,4 +1,4 @@
-FROM postgres:9.6
+FROM postgres:13-alpine
 
 ARG TZ=Europe/Moscow
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
