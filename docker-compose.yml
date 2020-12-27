@@ -1,0 +1,81 @@
+version: "3"
+
+services:
+
+  nginx:
+    build:
+      context: ./docker/nginx
+      dockerfile: Dockerfile
+      args:
+        UID: $UID
+        GUID: $GUID
+    environment:
+      - ENV=$ENVIRONMENT
+      - TZ=$TIMEZONE
+    depends_on:
+      - php
+    ports:
+      - $PORT:80
+    volumes:
+      - "./volumes/logs/nginx:/var/log/nginx"
+      - "./shared:/var/www/backend"
+    networks:
+      - test
+
+  php:
+    build:
+      context: ./docker/php
+      dockerfile: Dockerfile
+      args:
+        UID: $UID
+        GUID: $GUID
+    expose:
+      - "9000"
+    volumes:
+      - "./shared:/var/www/backend"
+    healthcheck:
+      test: ["CMD", "php-fpm", "-t"]
+      timeout: 5s
+      retries: 5
+    depends_on:
+      - db
+    environment:
+      # ifconfig | grep 'inet 192'| awk '{ print $2}'
+      XDEBUG_CONFIG: "remote_host=192.168.222.1 remote_enable=1 remote_port=9002 remote_connect_back=0 profiler_enable=0 remote_autostart=0"
+      PHP_IDE_CONFIG: "serverName=docker"
+      TZ: $TIMEZONE
+      ENV: $ENVIRONMENT
+    dns: 8.8.8.8
+    networks:
+      - test
+
+  db:
+    build:
+      context: ./docker/postgres
+      dockerfile: Dockerfile
+    expose:
+      - "5432"
+    ports:
+      - $DB_PORT:5432
+    volumes:
+      - "./volumes/postgresql/data:/var/lib/postgresql/data/pgdata"
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_DB: $DB_NAME
+      POSTGRES_USER: $DB_USER
+      POSTGRES_PASSWORD: $DB_PASS
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U ${DB_USER}"]
+      interval: 3s
+      timeout: 5s
+      retries: 5
+    networks:
+      - test
+
+networks:
+  test:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.222.0/28
