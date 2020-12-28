@@ -26,6 +26,14 @@ services:
     App\Controller\:
         resource: '../src/Controller/'
         tags: ['controller.service_arguments']
+        calls:
+            - [ setEntityManager, [ '@Doctrine\ORM\EntityManagerInterface' ] ]
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    App\Utils\RequestDataResolver:
+        arguments:
+            - '@validator'
+        tags:
+            - { name: controller.request_value_resolver, priority: 50 }
