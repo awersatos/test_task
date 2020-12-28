@@ -21,7 +21,7 @@ class Book  implements Translatable
 
     /**
      * @Gedmo\Translatable
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=false, unique=true)
      */
     private string $name;
 
@@ -31,7 +31,10 @@ class Book  implements Translatable
      */
     private Author $author;
 
-    private $locale;
+    /**
+     * @Gedmo\Locale
+     */
+    private string $locale = 'ru';
 
     public function getId(): int
     {
