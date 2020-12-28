@@ -8,6 +8,7 @@ use App\RequestData\BookData;
 use App\Utils\ApiAbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Request;
 use Gedmo\Translatable\Entity\Translation;
 
 class BookController extends ApiAbstractController
@@ -32,5 +33,18 @@ class BookController extends ApiAbstractController
 
 
         return $this->addData('id', $book->getId())->createResponse();
+    }
+
+    /**
+     * @Route("{_locale<ru|en>}/book/{id}", name="book_get", methods={"GET"})
+     */
+    public function getAction(Book $book, Request $request)
+    {
+        $locale = $request->getLocale();
+        if($locale !== 'ru') {
+            $book->setTranslatableLocale($locale);
+            $this->em()->refresh($book);
+        }
+        return $this->addRootData(['id' => $book->getId(), 'Name' => $book->getName()])->createResponse();
     }
 }
