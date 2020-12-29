@@ -27,7 +27,7 @@ class BookController extends ApiAbstractController
         $book = new Book();
         $book->setAuthor($author);
         $book->setName($data->getRuName());
-        $translation = $this->em()->getRepository('Gedmo\\Translatable\\Entity\\Translation');
+        $translation = $this->em()->getRepository(Translation::class);
         $translation->translate($book, 'name', 'en', $data->getEnName());
         $this->em()->persist($book);
         $this->em()->flush();
