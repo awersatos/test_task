@@ -21,6 +21,6 @@ class AuthorController extends ApiAbstractController
         $this->em()->persist($author);
         $this->em()->flush();
 
-        return $this->addData('id', $author->getId())->createResponse();
+        return $this->addData('Id', $author->getId())->createResponse();
     }
 }
