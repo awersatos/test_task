@@ -29,12 +29,16 @@ final class Version20201230083004 extends AbstractMigration
 
                 if (preg_match("/^[а-яА-Яa-zA-Z]{3,}/u", $book, $matches)) {
                     $authorName = $matches[0];
-                    $bookName = trim(str_replace($authorName, '', $book), " ,.-\t\r\n\'\"") . ' ISDN' . random_int(500, 50000);
-                    $bookName = str_replace('\'', '', $bookName);
-                    if(strlen($bookName) < 3 || strlen($authorName) < 3) {
+                    $bookName = trim(str_replace($authorName, '', $book), " ,.-\t\r\n\'\"")
+                        . ' ISDN' . random_int(500,
+                            50000);
+                    if (strlen($bookName) < 3 || strlen($authorName) < 3) {
                         continue;
                     }
-                    $sql .= (($i === 0) ? '' : ',') . "('" . $bookName . "', (SELECT COALESCE((SELECT id  FROM author WHERE name LIKE '%" . $authorName . "%' LIMIT 1), 1051)))";
+                    $sql .= (($i === 0) ? '' : ',')
+                        . "(" . $this->connection->quote($bookName)
+                        . ", (SELECT COALESCE((SELECT id  FROM author WHERE name LIKE '%"
+                        . $authorName . "%' LIMIT 1), 1)))";
 
                 }
             }
