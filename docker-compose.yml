@@ -19,8 +19,6 @@ services:
     volumes:
       - "./volumes/logs/nginx:/var/log/nginx"
       - "./shared:/var/www/backend"
-    networks:
-      - test
 
   php:
     build:
@@ -46,8 +44,6 @@ services:
       TZ: $TIMEZONE
       ENV: $ENVIRONMENT
     dns: 8.8.8.8
-    networks:
-      - test
 
   db:
     build:
@@ -69,13 +65,3 @@ services:
       interval: 3s
       timeout: 5s
       retries: 5
-    networks:
-      - test
-
-networks:
-  test:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: 192.168.222.0/28

@@ -1,5 +1,5 @@
 build:
-	docker-compose build --force-rm --compress
+	@./bin/deploy
 
 start:
 	docker-compose up -d --remove-orphans --no-recreate

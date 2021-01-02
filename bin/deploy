@@ -1,0 +1,16 @@
+#!/bin/bash
+
+if [ ! -f ".env" ];
+  then
+    echo "Файл .env не существует";
+    exit 1;
+fi
+
+source .env
+touch shared/.env.local
+echo "DATABASE_URL=\"postgresql://$DB_USER:$DB_PASS@db:5432/$DB_NAME?serverVersion=13\&charset=utf8\"" > shared/.env.local
+
+docker-compose up -d --build
+sh bin/composer install --no-interaction
+sh bin/migrations_migrate
+sh bin/clear_cache
